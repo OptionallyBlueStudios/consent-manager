@@ -32,8 +32,8 @@
       --textColor: #ffffff;
       --backdropBackgroundColor: #00000033;
       --backdropBackgroundBlur: 0px;
-      --iconColor: #24c6db;
-      --iconBackgroundColor: #282b34;
+      --iconColor: #282B34;
+      --iconBackgroundColor: #FFFFFF;
     }
   `;
   document.head.appendChild(styleOverrides);
@@ -64,7 +64,7 @@
     window.silktideConsentManager.init({
       backdrop: { show: true },
       icon: { position: "bottomRight" },
-      prompt: { position: "bottomCenter" },
+      prompt: { position: "bottomRight" },
       consentTypes: [
         {
           id: "essential",
