@@ -1,9 +1,16 @@
 (function () {
   // 1. Grab configuration from the script tag's data-attributes
   const currentScript = document.currentScript;
-  const ga4Id = currentScript.getAttribute('data-ga4');
-  const clarityId = currentScript.getAttribute('data-clarity');
-  const glitchtipDsn = currentScript.getAttribute('data-glitchtip-dsn');
+  const consentScript = currentScript || Array.from(document.scripts).find((script) => {
+    return script.getAttribute('data-glitchtip-dsn') || script.src.includes('consent-manager');
+  }) || document.querySelector('script[data-glitchtip-dsn], script[src*="consent-manager"]');
+  const ga4Id = consentScript?.getAttribute('data-ga4') || '';
+  const clarityId = consentScript?.getAttribute('data-clarity') || '';
+  const glitchtipDsn = consentScript?.getAttribute('data-glitchtip-dsn') || '';
+
+  if (!glitchtipDsn) {
+    console.warn('[GlitchTip] No DSN found. Add data-glitchtip-dsn to the consent manager script tag to enable error reporting.');
+  }
 
   // 2. Dynamically inject Preconnect and Silktide CSS
   const preconnect = document.createElement('link');
@@ -47,10 +54,18 @@
   jsLoader.onload = function () {
     initializeConsentManager();
   };
+  jsLoader.onerror = function () {
+    console.error('[consent-manager] Failed to load the consent manager library.');
+  };
   document.head.appendChild(jsLoader);
 
   // 5. Initialize the Consent Manager
   function initializeConsentManager() {
+    if (!window.silktideConsentManager) {
+      console.error('[consent-manager] The consent manager library did not initialize correctly.');
+      return;
+    }
+
     // Build analytics scripts and onAccept callback dynamically
     const analyticsScripts = [];
     
@@ -72,6 +87,7 @@
           description: "<p>These cookies are necessary for the website to function properly and cannot be switched off. They help with things like logging in and setting your privacy preferences.</p>",
           required: true,
           onAccept: function () {
+            console.log('[GlitchTip] Essential consent accepted');
             // Load GlitchTip under Essential (it is an error reporting tool, typically classified as Essential)
             if (glitchtipDsn && !window.Sentry) {
               const sentryScript = document.createElement('script');
@@ -82,12 +98,37 @@
               sentryScript.integrity = 'sha384-d3YaoAU3tHG6Fp+i9wDLHT6HoknMt4cUZYob+LhIw2Z7SNMubeealjekiA4fR3h8';
               sentryScript.crossOrigin = 'anonymous';
               sentryScript.onload = function() {
+                console.log('[GlitchTip] Sentry SDK loaded from consent manager');
                 window.Sentry.init({
                   dsn: glitchtipDsn,
-                  autoSessionTracking: false // GlitchTip does not support sessions
+                  autoSessionTracking: false,
+                  environment: 'production',
+                  enabled: true,
+                  sendClientReports: true
+                });
+                console.log('[GlitchTip] Sentry initialized from consent manager');
+                window.Sentry.captureException(new Error('GlitchTip test error from consent manager'));
+                window.Sentry.flush(10000).then((result) => {
+                  console.log('[GlitchTip] Flush complete from consent manager:', result);
                 });
               };
+              sentryScript.onerror = function() {
+                console.error('[GlitchTip] Failed to load Sentry SDK from consent manager');
+              };
               document.head.appendChild(sentryScript);
+            } else if (glitchtipDsn && window.Sentry) {
+              console.log('[GlitchTip] Sentry already loaded; initializing now');
+              window.Sentry.init({
+                dsn: glitchtipDsn,
+                autoSessionTracking: false,
+                environment: 'production',
+                enabled: true,
+                sendClientReports: true
+              });
+              window.Sentry.captureException(new Error('GlitchTip test error from consent manager'));
+              window.Sentry.flush(10000).then((result) => {
+                console.log('[GlitchTip] Flush complete from consent manager:', result);
+              });
             }
           }
         },
