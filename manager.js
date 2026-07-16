@@ -79,7 +79,7 @@
               // When bumping this version, update the integrity hash from:
               // https://docs.sentry.io/platforms/javascript/install/cdn/#available-bundles
               sentryScript.src = 'https://browser.sentry-cdn.com/10.65.0/bundle.min.js';
-              sentryScript.integrity = 'sha384-q2fVSiE1XJEIsloRhp/ZpJcLhd9M3bUEoVZwSdAFxRgwO5zrF8Ow7uWHBgaSgmY/';
+              sentryScript.integrity = 'sha384-d3YaoAU3tHG6Fp+i9wDLHT6HoknMt4cUZYob+LhIw2Z7SNMubeealjekiA4fR3h8';
               sentryScript.crossOrigin = 'anonymous';
               sentryScript.onload = function() {
                 window.Sentry.init({
