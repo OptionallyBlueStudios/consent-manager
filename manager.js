@@ -75,9 +75,17 @@
             // Load GlitchTip under Essential (it is an error reporting tool, typically classified as Essential)
             if (glitchtipDsn && !window.Sentry) {
               const sentryScript = document.createElement('script');
-              sentryScript.src = 'https://browser.sentry-cdn.com/7.x.x/bundle.min.js'; // GlitchTip uses the Sentry SDK
+              // GlitchTip is Sentry-API-compatible; this loads the plain (non-tracing) Sentry Browser SDK bundle.
+              // When bumping this version, update the integrity hash from:
+              // https://docs.sentry.io/platforms/javascript/install/cdn/#available-bundles
+              sentryScript.src = 'https://browser.sentry-cdn.com/10.65.0/bundle.min.js';
+              sentryScript.integrity = 'sha384-q2fVSiE1XJEIsloRhp/ZpJcLhd9M3bUEoVZwSdAFxRgwO5zrF8Ow7uWHBgaSgmY/';
+              sentryScript.crossOrigin = 'anonymous';
               sentryScript.onload = function() {
-                window.Sentry.init({ dsn: glitchtipDsn });
+                window.Sentry.init({
+                  dsn: glitchtipDsn,
+                  autoSessionTracking: false // GlitchTip does not support sessions
+                });
               };
               document.head.appendChild(sentryScript);
             }
