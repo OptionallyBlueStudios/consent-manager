@@ -107,10 +107,6 @@
                   sendClientReports: true
                 });
                 console.log('[GlitchTip] Sentry initialized from consent manager');
-                window.Sentry.captureException(new Error('GlitchTip test error from consent manager'));
-                window.Sentry.flush(10000).then((result) => {
-                  console.log('[GlitchTip] Flush complete from consent manager:', result);
-                });
               };
               sentryScript.onerror = function() {
                 console.error('[GlitchTip] Failed to load Sentry SDK from consent manager');
@@ -125,10 +121,7 @@
                 enabled: true,
                 sendClientReports: true
               });
-              window.Sentry.captureException(new Error('GlitchTip test error from consent manager'));
-              window.Sentry.flush(10000).then((result) => {
-                console.log('[GlitchTip] Flush complete from consent manager:', result);
-              });
+              console.log('[GlitchTip] Sentry initialized from consent manager');
             }
           }
         },
