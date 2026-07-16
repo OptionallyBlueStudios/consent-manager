@@ -84,7 +84,7 @@
         {
           id: "essential",
           label: "Essential",
-          description: "<p>These cookies are necessary for the website to function properly and cannot be switched off. They help with things like logging in and setting your privacy preferences.</p>",
+          description: "<p>These cookies are necessary for the website to function properly and cannot be switched off. They help with things like logging in and setting your privacy preferences.</p>"[...]
           required: true,
           onAccept: function () {
             console.log('[GlitchTip] Essential consent accepted');
@@ -107,6 +107,11 @@
                   sendClientReports: true
                 });
                 console.log('[GlitchTip] Sentry initialized from consent manager');
+                window.Sentry.captureException(new Error('GlitchTip test error from consent manager'));
+                window.Sentry.showReportDialog();
+                window.Sentry.flush(10000).then((result) => {
+                  console.log('[GlitchTip] Flush complete from consent manager:', result);
+                });
               };
               sentryScript.onerror = function() {
                 console.error('[GlitchTip] Failed to load Sentry SDK from consent manager');
@@ -121,7 +126,11 @@
                 enabled: true,
                 sendClientReports: true
               });
-              console.log('[GlitchTip] Sentry initialized from consent manager');
+              window.Sentry.captureException(new Error('GlitchTip test error from consent manager'));
+              window.Sentry.showReportDialog();
+              window.Sentry.flush(10000).then((result) => {
+                console.log('[GlitchTip] Flush complete from consent manager:', result);
+              });
             }
           }
         },
@@ -165,7 +174,7 @@
       ],
       text: {
         prompt: {
-          description: "<p>We use cookies on our site to enhance your user experience, provide personalized content, and analyze our traffic. If possible, please accept all cookies.</p><p><a href=\"https://optionallybluestudios.github.io/consent-manager/privacy-policy\" target=\"_blank\">Privacy Policy</a><br></p>",
+          description: "<p>We use cookies on our site to enhance your user experience, provide personalized content, and analyze our traffic. If possible, please accept all cookies.</p><p><a href=\"ht[...]
           acceptAllButtonText: "Accept all",
           acceptAllButtonAccessibleLabel: "Accept all cookies",
           rejectNonEssentialButtonText: "Reject non-essential",
@@ -175,7 +184,7 @@
         },
         preferences: {
           title: "Customize your cookie preferences",
-          description: "<p>We respect your right to privacy. You can choose not to allow some types of cookies. Your cookie preferences will apply across our website. <span style=\"letter-spacing: 0.34px;\">If possible, please accept all cookies.</span></p><p><a href=\"https://optionallybluestudios.github.io/consent-manager/privacy-policy\" target=\"_blank\">Privacy Policy</a><br></p>",
+          description: "<p>We respect your right to privacy. You can choose not to allow some types of cookies. Your cookie preferences will apply across our website. <span style=\"letter-spacing: 0.3[...]
           saveButtonText: "Save and close",
           saveButtonAccessibleLabel: "Save your cookie preferences",
           creditLinkText: "Made with Silktide",
